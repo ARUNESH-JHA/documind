@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # ─── MongoDB ────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    container_name: documind_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-password}
+      MONGO_INITDB_DATABASE: documind
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - documind_net
+
+  # ─── ChromaDB (Vector Store) ─────────────────────────────────
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: documind_chroma
+    restart: unless-stopped
+    ports:
+      - '8000:8000'
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - documind_net
+
+  # ─── Express API ─────────────────────────────────────────────
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: development
+    container_name: documind_server
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - chromadb
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-password}@mongo:27017/documind?authSource=admin
+      CHROMA_URL: http://chromadb:8000
+      JWT_SECRET: ${JWT_SECRET:-supersecretkey_change_in_prod}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-refreshsecret_change_in_prod}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      CLIENT_URL: http://localhost:3000
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+      - uploads_data:/app/uploads
+    networks:
+      - documind_net
+
+  # ─── React Frontend ──────────────────────────────────────────
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      target: development
+    container_name: documind_client
+    restart: unless-stopped
+    depends_on:
+      - server
+    environment:
+      REACT_APP_API_URL: http://localhost:5000/api
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - documind_net
+
+volumes:
+  mongo_data:
+  chroma_data:
+  uploads_data:
+
+networks:
+  documind_net:
+    driver: bridge

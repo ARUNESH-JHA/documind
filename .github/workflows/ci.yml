@@ -1,0 +1,89 @@
+name: CI — Test & Lint
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Backend Tests ───────────────────────────────
+  server-test:
+    name: Server Tests
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        run: npm ci
+        working-directory: ./server
+
+      - name: Run server tests
+        run: npm test
+        working-directory: ./server
+        env:
+          NODE_ENV: test
+          MONGO_URI_TEST: mongodb://localhost:27017/documind_test
+          JWT_SECRET: test_secret_key
+          JWT_REFRESH_SECRET: test_refresh_secret
+          GEMINI_API_KEY: dummy_key_for_test
+
+  # ─── Frontend Tests ──────────────────────────────
+  client-test:
+    name: Client Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: ./client
+
+      - name: Run client tests
+        run: npm test
+        working-directory: ./client
+        env:
+          CI: true
+
+  # ─── Docker Build Check ──────────────────────────
+  docker-build:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+    needs: [server-test, client-test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run: docker compose build
+        env:
+          GEMINI_API_KEY: dummy
+          JWT_SECRET: dummy
+          JWT_REFRESH_SECRET: dummy

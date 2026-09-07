@@ -7,15 +7,15 @@
 
 ---
 
-## ✨ Features
+##  Features
 
-- 📄 **Upload PDFs & TXTs** — Drag-and-drop file upload
-- 🤖 **RAG Pipeline** — Retrieval-Augmented Generation for accurate answers
-- 💬 **Real-time Streaming** — AI responses streamed token by token
-- 📍 **Source Citations** — See exactly which parts of the document were used
-- 🔐 **JWT Auth** — Secure login with refresh token rotation
-- 🐳 **Docker Ready** — One command to run everything
-- ⚙️ **CI/CD** — Automated tests + Docker image builds on every push
+-  **Upload PDFs & TXTs** — Drag-and-drop file upload
+-  **RAG Pipeline** — Retrieval-Augmented Generation for accurate answers
+-  **Real-time Streaming** — AI responses streamed token by token
+-  **Source Citations** — See exactly which parts of the document were used
+-  **JWT Auth** — Secure login with refresh token rotation
+-  **Docker Ready** — One command to run everything
+-  **CI/CD** — Automated tests + Docker image builds on every push
 
 ---
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -77,7 +77,7 @@ User → React Frontend → Express API → MongoDB (users, chats)
 
 ---
 
-## 🔑 API Endpoints
+##  API Endpoints
 
 ### Auth
 | Method | Endpoint | Description |
@@ -105,7 +105,7 @@ User → React Frontend → Express API → MongoDB (users, chats)
 
 ---
 
-## 🧪 Running Tests
+##  Running Tests
 
 ```bash
 # Backend tests
@@ -117,7 +117,7 @@ cd client && npm test
 
 ---
 
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 | Event | Action |
 |---|---|
@@ -127,7 +127,7 @@ cd client && npm test
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 documind/

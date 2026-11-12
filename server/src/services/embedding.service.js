@@ -45,7 +45,7 @@ const extractText = async (filePath, fileType) => {
 
 // ─── Generate Embeddings via Gemini ──────────────
 const embedTexts = async (texts) => {
-  const model = genAI.getGenerativeModel({ model: 'gemini-embedding-2' });
+  const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
   const embeddings = [];
 
   // Batch in groups of 10 (API limit)

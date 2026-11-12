@@ -56,7 +56,7 @@ exports.query = async ({ question, document, chatHistory = [], onToken }) => {
   const prompt = buildPrompt(question, sources, chatHistory);
 
   // 4. Stream response from Gemini
-  const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
   const stream = await model.generateContentStream(prompt);
 
   let fullAnswer = '';
